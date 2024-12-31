@@ -58,6 +58,9 @@ const FactChecker = () => {
       body: JSON.stringify({ text: factText }),
     });
 
+    const text = await response.text();
+    console.log('Raw Response:', text);
+
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
