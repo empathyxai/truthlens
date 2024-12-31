@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './App.css';
+import config from './config';
+// console.log(process.env.REACT_APP_FACT_CHECKER_API);
 
 // Import components
 import AiGenerated from './components/AiGenerated';

@@ -8,17 +8,17 @@ const AiGenerated = () => {
   const [image, setImage] = useState(null); // Image input state
   const [isText, setIsText] = useState(true); // Toggle for text or image
   const [response, setResponse] = useState(null); // Response from backend
-
+  
   // Configure AWS S3
   AWS.config.update({
-    accessKeyId: 'AWS_ACCESS_KEY', // Replace with your AWS Access Key ID
-    secretAccessKey: 'AWS_SECRET_KEY', // Replace with your AWS Secret Access Key
-    region: 'AWS_REGION', // Replace with your AWS S3 bucket region
+    accessKeyId: `${config.REACT_APP_ACCESS_KEY}`, // Replace with your AWS Access Key ID
+    secretAccessKey: `${config.REACT_APP_SECRET_ACCESS_KEY}`, // Replace with your AWS Secret Access Key
+    region: 'ap-southeast-2', // Replace with your AWS S3 bucket region
   });
 
   const s3 = new AWS.S3();
-  const bucketName = 'BUCKET_NAME'; // Replace with your bucket name
-  const bucketRegion = 'BUCKET_REGION'; // The region of your bucket (update if necessary)
+  const bucketName = `${config.REACT_APP_BUCKET_NAME}`; // Replace with your bucket name
+  const bucketRegion = 'ap-southeast-2'; // The region of your bucket (update if necessary)
 
   // Handle text input change
   const handleTextChange = (e) => {
@@ -62,7 +62,7 @@ const AiGenerated = () => {
       // If text input
       if (isText && text.trim()) {
         const payload = { text }; // Prepare JSON payload with text
-        result = await axios.post('API_ENDPOINT_URL', payload, {
+        result = await axios.post(`${config.REACT_APP_AI_GEN_TEXT_API}`, payload, {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -76,7 +76,7 @@ const AiGenerated = () => {
         console.log(fileUrl);
 
         const payload = { img_url: fileUrl }; // Prepare JSON payload with the image URL as "img_url"
-        result = await axios.post('API_ENDPOINT_URL', payload, {
+        result = await axios.post(`${config.REACT_APP_AI_GEN_IMAGE_API}`, payload, {
           headers: {
             'Content-Type': 'application/json',
           },

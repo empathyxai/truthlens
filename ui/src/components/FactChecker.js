@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import config from '../config';
 
 const FactChecker = () => {
   const [factText, setFactText] = useState('');
@@ -51,7 +52,7 @@ const FactChecker = () => {
 
   try {
     console.log('Making API call...');
-    const response = await fetch('API_ENDPOINT_URL', {
+    const response = await fetch(`${config.REACT_APP_FACT_CHECKER_API}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -59,8 +60,8 @@ const FactChecker = () => {
       body: JSON.stringify({ text: factText }),
     });
 
-    const text = await response.text();
-    console.log('Raw Response:', text);
+    // const text = await response.text();
+    // console.log('Raw Response:', text);
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);

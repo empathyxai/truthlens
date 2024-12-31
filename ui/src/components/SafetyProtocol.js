@@ -21,7 +21,7 @@ const SafetyProtocol = () => {
     try {
       // Call the backend API to check safety protocol
       const payload = { text: text }; // Prepare JSON payload with text input
-      const result = await axios.post('API_ENDPOINT_URL', payload, {
+      const result = await axios.post(`${config.REACT_APP_SAFETY_PROTOCOL_API}`, payload, {
         headers: {
           'Content-Type': 'application/json', // Specify content type as JSON
         },
