@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AWS from 'aws-sdk';
 import axios from 'axios';
+import config from '../config';
 
 const AiGenerated = () => {
   const [text, setText] = useState(''); // Text input state

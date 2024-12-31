@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios'; // Import axios for making API calls
+import config from '../config';
 
 const SafetyProtocol = () => {
   const [text, setText] = useState(''); // Text input state

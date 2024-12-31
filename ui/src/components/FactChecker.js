@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import config from '../config';
 
 const FactChecker = () => {
   const [factText, setFactText] = useState('');
