@@ -49,11 +49,13 @@ const FactChecker = () => {
   };
 
   const renderResult = () => {
-    if (!parsedResult) return null;
+    if (!parsedResult) {
+      return <p>No results to display. Please try again.</p>;
+    }
 
     console.log('Rendering Result:', parsedResult);
 
-    // Handle different data structures
+    // Handle arrays
     if (Array.isArray(parsedResult)) {
       return parsedResult.map((item, index) => (
         <div key={index} style={{ marginBottom: '10px' }}>
@@ -62,13 +64,23 @@ const FactChecker = () => {
           {item.excerpt && <p><strong>Excerpt:</strong> {item.excerpt}</p>}
         </div>
       ));
-    } else if (typeof parsedResult === 'object') {
-      return Object.entries(parsedResult).map(([key, value]) => (
-        <p key={key}><strong>{key}:</strong> {JSON.stringify(value)}</p>
-      ));
-    } else {
-      return <p>{parsedResult}</p>;
     }
+
+    // Handle objects
+    if (typeof parsedResult === 'object' && parsedResult !== null) {
+      return (
+        <div>
+          {Object.entries(parsedResult).map(([key, value]) => (
+            <p key={key}>
+              <strong>{key}:</strong> {typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
+            </p>
+          ))}
+        </div>
+      );
+    }
+
+    // Handle simple values (string, number, etc.)
+    return <p>{parsedResult}</p>;
   };
 
   return (
