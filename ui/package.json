@@ -4,13 +4,19 @@
   "private": true,
   "dependencies": {
     "aws-sdk": "^2.1692.0",
-    "axios": "^1.7.9",
-    "cra-template": "1.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^4.2.4"
+  "axios": "^1.7.9",
+  "cra-template": "1.2.0",
+  "react": "^18.0.0",  // Use the correct major version (19.x.x is not officially released)
+  "react-dom": "^18.0.0",  // Same for react-dom
+  "react-router-dom": "^7.1.1",
+  "react-scripts": "5.0.1",
+  "web-vitals": "^4.2.4",
+  "@emotion/react": "^11.x.x",
+  "@emotion/styled": "^11.x.x",
+  "@mui/material": "^5.x.x",
+  "@mui/icons-material": "^5.x.x",
+  "dotenv": "^10.x.x",
+  "whatwg-fetch": "^3.x.x"
   },
   "scripts": {
     "start": "react-scripts start",
