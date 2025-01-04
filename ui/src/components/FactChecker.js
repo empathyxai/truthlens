@@ -25,36 +25,27 @@ const FactChecker = () => {
     setErrorMessage(null);
     setParsedResult(null);
     setLoading(true);
-    console.log('Fact Text Submitted:', factText);
 
     if (!factText.trim()) {
       setErrorMessage('Please enter text to check.');
-      console.log('Error: Empty fact text.');
       setLoading(false);
       return;
     }
 
     try {
-      console.log('Making API call to:', config.REACT_APP_FACT_CHECKER_API);
-
       const response = await fetch(`${config.REACT_APP_FACT_CHECKER_API}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: factText }),
       });
 
-      console.log('API Response Status:', response.status);
-
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log('API Response Data:', data);
-
-      setParsedResult(data.result); // Ensure "result" matches your backend response key
+      setParsedResult(data.body?.result); // Extract result from API response
     } catch (error) {
-      console.error('Error during API call:', error);
       setErrorMessage('Error occurred while checking facts. Please try again.');
     } finally {
       setLoading(false);
@@ -63,22 +54,54 @@ const FactChecker = () => {
 
   const renderResult = () => {
     if (!parsedResult) {
-      console.log('No parsed result available.');
       return null;
     }
 
-    console.log('Rendering Parsed Result:', parsedResult);
+    const { Answer, DOCUMENT, FACT, "Grade Model": gradeModel } = parsedResult;
+    const parsedGradeModel = gradeModel ? JSON.parse(gradeModel) : [];
 
     return (
       <List>
-        {Object.entries(parsedResult).map(([key, value]) => (
-          <ListItem key={key}>
+        {/* Grade Model */}
+        <ListItem>
+          <ListItemText
+            primary="Grade Model"
+            secondary={parsedGradeModel.length > 0
+              ? `Useful: ${parsedGradeModel[0]?.useful || 'no'}`
+              : 'No grade model data available'}
+          />
+        </ListItem>
+
+        {/* Fact */}
+        <ListItem>
+          <ListItemText
+            primary="Fact"
+            secondary={FACT?.trim()
+              ? FACT
+              : 'No verifiable facts found.'}
+          />
+        </ListItem>
+
+        {/* Answer */}
+        {Answer && (
+          <ListItem>
+            <ListItemText primary="Answer" secondary={Answer} />
+          </ListItem>
+        )}
+
+        {/* Document */}
+        {DOCUMENT && (
+          <ListItem>
             <ListItemText
-              primary={<strong>{key}:</strong>}
-              secondary={typeof value === 'string' ? value : JSON.stringify(value)}
+              primary="Document"
+              secondary={
+                <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                  {DOCUMENT}
+                </div>
+              }
             />
           </ListItem>
-        ))}
+        )}
       </List>
     );
   };
