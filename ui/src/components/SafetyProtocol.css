@@ -1,0 +1,68 @@
+.safety-protocol-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.8em;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.input-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  margin-bottom: 20px;
+}
+
+.button-container {
+  text-align: center;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.result-container {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.result-title {
+  font-size: 1.2em;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.result-text {
+  font-size: 1em;
+  color: #555;
+}
+
+.toxicity-score {
+  font-size: 1em;
+  color: #d9534f; /* Red color for toxicity score */
+}
