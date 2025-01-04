@@ -49,7 +49,7 @@ function App() {
         <div className="video-container">
           <h2>Featured Video</h2>
           <video controls width="600">
-            <source src="/video/sample.mp4" type="video/mp4" />
+            <source src="/public/sample.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
