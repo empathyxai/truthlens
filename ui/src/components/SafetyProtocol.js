@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios'; // Import axios for making API calls
 import config from '../config';
+import './SafetyProtocol.css'; // Custom CSS for styling
 
 const SafetyProtocol = () => {
   const [text, setText] = useState(''); // Text input state
   const [response, setResponse] = useState(null); // Response from backend
+  const [toxicityScore, setToxicityScore] = useState(null); // Toxicity score
 
   // Handle text input change
   const handleTextChange = (e) => {
@@ -15,6 +17,7 @@ const SafetyProtocol = () => {
   const handleSubmit = async () => {
     if (!text.trim()) {
       setResponse({ message: 'Please enter some text for safety protocol check.' });
+      setToxicityScore(null);
       return;
     }
 
@@ -26,42 +29,56 @@ const SafetyProtocol = () => {
           'Content-Type': 'application/json', // Specify content type as JSON
         },
       });
-      console.log('Response from backend:');
-      console.log(result.data)
+      console.log('Response from backend:', result.data);
 
-      // Set the response state with the result from backend
-      setResponse(result.data);
+      // Extract the result and toxicity score from the backend response
+      const resultText = result.data.body?.result || '';
+      let score = 0.0;
+
+      if (resultText.startsWith('[REDACTED]')) {
+        const scoreMatch = resultText.match(/toxic:([\d.]+)/);
+        score = scoreMatch ? parseFloat(scoreMatch[1]) : 0.0;
+        setResponse({ message: 'The content has been redacted for safety reasons.' });
+      } else {
+        setResponse({ message: resultText });
+      }
+
+      setToxicityScore(score);
     } catch (error) {
       console.error('Error:', error);
       setResponse({ message: 'Error occurred while checking the safety protocol.' });
+      setToxicityScore(null);
     }
   };
 
   return (
-    <div className="safety-protocol">
-      <h2>Safety Protocol</h2>
+    <div className="safety-protocol-container">
+      <h1 className="title">Unsafe Content Redaction</h1>
 
       {/* Textarea for input */}
       <textarea
+        className="input-textarea"
         value={text}
         onChange={handleTextChange}
         placeholder="Enter text for safety protocol check"
-        rows="4"
-        cols="50"
+        rows="5"
+        cols="60"
       />
 
       {/* Submit button */}
-      <div>
-        <button onClick={handleSubmit}>Check Safety</button>
+      <div className="button-container">
+        <button className="submit-button" onClick={handleSubmit}>Check Safety</button>
       </div>
 
       {/* Display result */}
       {response && (
-        <div className="result">
-          <h3>Result:</h3>
-          <p>{response.message}</p>
-          {response.data && (
-            <pre>{JSON.stringify(response.data, null, 2)}</pre>
+        <div className="result-container">
+          <h3 className="result-title">Result:</h3>
+          <p className="result-text">{response.message}</p>
+          {toxicityScore !== null && (
+            <p className="toxicity-score">
+              <strong>Toxicity Score:</strong> {toxicityScore.toFixed(2)}
+            </p>
           )}
         </div>
       )}
