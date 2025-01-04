@@ -16,11 +16,11 @@ import {
 import config from '../config';
 
 const AiGenerated = () => {
-  const [text, setText] = useState(''); // Text input state
-  const [image, setImage] = useState(null); // Image input state
-  const [isText, setIsText] = useState(true); // Toggle for text or image
-  const [response, setResponse] = useState(null); // Response from backend
-  const [loading, setLoading] = useState(false); // Loading state
+  const [text, setText] = useState('');
+  const [image, setImage] = useState(null);
+  const [isText, setIsText] = useState(true);
+  const [response, setResponse] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // Configure AWS S3
   AWS.config.update({
@@ -48,6 +48,7 @@ const AiGenerated = () => {
     try {
       const uploadResult = await s3.upload(params).promise();
       const imageUrl = `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${params.Key}`;
+      console.log('Uploaded Image URL:', imageUrl);
       return imageUrl;
     } catch (error) {
       console.error('Error uploading image to S3:', error);
@@ -69,6 +70,7 @@ const AiGenerated = () => {
 
       if (isText && text.trim()) {
         const payload = { text };
+        console.log('Submitting text payload:', payload);
         result = await axios.post(`${config.REACT_APP_AI_GEN_TEXT_API}`, payload, {
           headers: { 'Content-Type': 'application/json' },
         });
@@ -77,11 +79,13 @@ const AiGenerated = () => {
       if (!isText && image) {
         const fileUrl = await uploadImageToS3(image);
         const payload = { img_url: fileUrl };
+        console.log('Submitting image payload:', payload);
         result = await axios.post(`${config.REACT_APP_AI_GEN_IMAGE_API}`, payload, {
           headers: { 'Content-Type': 'application/json' },
         });
       }
 
+      console.log('Response from backend:', result.data);
       setResponse(result.data);
     } catch (error) {
       console.error('Error:', error);
@@ -91,14 +95,53 @@ const AiGenerated = () => {
     }
   };
 
+  const renderResult = () => {
+    if (!response) return null;
+
+    console.log('Rendering response:', response);
+
+    const resultBody = response.body?.result || '';
+    let parsedResult;
+
+    try {
+      parsedResult = JSON.parse(resultBody);
+    } catch (error) {
+      console.error('Error parsing API response:', error);
+      return <Alert severity="error">Error parsing result from backend.</Alert>;
+    }
+
+    if (isText) {
+      const isFake = parsedResult[0]?.fake === 'no' ? 'not fake or AI-generated' : 'fake or AI-generated';
+      return (
+        <Box>
+          <Typography variant="h6">Text Detection Result:</Typography>
+          <Alert severity={isFake === 'not fake or AI-generated' ? 'success' : 'error'}>
+            The text is {isFake}.
+          </Alert>
+        </Box>
+      );
+    }
+
+    if (!isText) {
+      const isFake = parsedResult.answer === 'No' ? 'not fake or AI-generated' : 'fake or AI-generated';
+      return (
+        <Box>
+          <Typography variant="h6">Image Detection Result:</Typography>
+          <Alert severity={isFake === 'not fake or AI-generated' ? 'success' : 'error'}>
+            The image is {isFake}.
+          </Alert>
+        </Box>
+      );
+    }
+  };
+
   return (
     <Box sx={{ maxWidth: '600px', margin: 'auto', padding: '20px', textAlign: 'center' }}>
       <Paper elevation={3} sx={{ padding: '20px' }}>
         <Typography variant="h4" gutterBottom>
-          AI Generated Content
+          AI Generated Content Detection
         </Typography>
 
-        {/* Input Type Toggle */}
         <RadioGroup
           row
           value={isText ? 'text' : 'image'}
@@ -108,10 +151,9 @@ const AiGenerated = () => {
           <FormControlLabel value="image" control={<Radio />} label="Image" />
         </RadioGroup>
 
-        {/* Text Input */}
         {isText && (
           <TextField
-            label="Enter text for AI generation"
+            label="Enter text to analyze"
             multiline
             rows={4}
             fullWidth
@@ -121,7 +163,6 @@ const AiGenerated = () => {
           />
         )}
 
-        {/* Image Upload */}
         {!isText && (
           <Button
             variant="outlined"
@@ -133,7 +174,6 @@ const AiGenerated = () => {
           </Button>
         )}
 
-        {/* Submit Button */}
         <Button
           variant="contained"
           color="primary"
@@ -142,32 +182,15 @@ const AiGenerated = () => {
           fullWidth
           sx={{ marginBottom: '20px' }}
         >
-          {loading ? <CircularProgress size={24} color="inherit" /> : 'Generate Content'}
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Check Content'}
         </Button>
 
-        {/* Display Response */}
         {response && (
           <Box>
             <Typography variant="h5" gutterBottom>
               Result
             </Typography>
-            {response.message && <Alert severity="info">{response.message}</Alert>}
-            {response.data && (
-              <Box
-                sx={{
-                  marginTop: '10px',
-                  padding: '10px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  backgroundColor: '#f9f9f9',
-                  textAlign: 'left',
-                  maxHeight: '200px',
-                  overflowY: 'auto',
-                }}
-              >
-                <pre>{JSON.stringify(response.data, null, 2)}</pre>
-              </Box>
-            )}
+            {renderResult()}
           </Box>
         )}
       </Paper>
